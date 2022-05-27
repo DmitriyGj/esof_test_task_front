@@ -14,7 +14,6 @@ function App() {
   ...( user ? privateRoutes: [])]
 
   useEffect(() => {
-    console.log('update')
     if(!user){
       navigate('/login')
     }

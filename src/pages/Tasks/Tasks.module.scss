@@ -1,5 +1,6 @@
 .Main {
     display: flex;
+    flex-direction: column;
     width: 100%;
     .CardsBlock{
         width: 100%;
@@ -9,6 +10,23 @@
         padding: 2%;
         * {
             margin: 2% auto;
+        }
+    }
+
+    .OptionsBlock {
+        display: flex;
+        flex-direction: column;
+        padding: 2%;
+        box-sizing: border-box;
+        width: 100%;
+        .Buttons {
+            flex-direction: row;
+            box-sizing: border-box;
+            padding: 2% 2%;
+
+            * {
+                margin: 0% 2%;
+            }
         }
     }
 

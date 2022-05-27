@@ -1,39 +1,35 @@
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useState, useCallback } from "react"
 import {Card} from '@mui/material'
 import {FormLabel} from '@mui/material';
 import style from './TaskCard.module.scss'
 import cn from 'classnames';
 import { ModalWindow } from "../ModalWindow/ModalWindow";
 import { TaskForm } from "../../forms/TaskForm/TaskForm";
-import tasksapi from "../../api/tasksapi";
+import TasksAPI from "../../api/tasksapi";
 import { UserContext } from "../../context/usercontext";
 
 const excludetoshow = ['creation_date'];
 
 export const TaskCard = (props) => {
+    const completed = props.status === '"Выполнена"';
     const {user} = useContext(UserContext);
-    const completed = props.status === "Звершено";
     const {status, end_date} = props;
     const failed = (new Date(end_date) < new Date() )
         && (status !== 'Завершено') 
         && (status !== 'Отменена');
     
-        useEffect(() => {
-            console.log(props.executor)
-        })
-    
     const [showEditModal, setShowEdit] = useState(false);
 
-    const editHandler = (token) => {
-        return async (values) => {
-            try{
-                await tasksapi.puttask(values, token)
-            }
-            catch(e){
-                console.log(e);
-            }
+    const editHandler = useCallback(async(values) => {
+        try{    
+            const rest = await TasksAPI.puttask(values, user.jwt )
         }
-    }
+        catch(e){
+            console.log(e);
+        }
+    },[props])
+
+    console.log(completed)
 
 
     return(<Card  onClick = {() => setShowEdit(true)} 
@@ -61,7 +57,7 @@ export const TaskCard = (props) => {
             title={`Редактирование задачи №${props.task_id}`} 
             onClose={() => setShowEdit(false)}>
                 
-            <TaskForm submit={() => editHandler(user.jwt)} 
+            <TaskForm submit={values =>editHandler(values)} 
                         additionalOnSubmit={() => setShowEdit(false)}
                         {...props}
                         />

@@ -12,7 +12,6 @@ export const LoginForm = () => {
 
     const loginHandler = async(values) => {
         try{
-            console.log(values)
             const res = await UsersAPI.auth(values)
             if(res.message){
                 alert(res.message)

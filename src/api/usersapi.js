@@ -20,7 +20,6 @@ class UsersAPI {
     }
 
     getUsers = async (token) => {
-        console.log(token)
         const res = await fetch(`${this.baseURL}`, {
             method:'GET',
             mode:'cors',

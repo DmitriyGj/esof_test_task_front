@@ -17,7 +17,7 @@ class TasksAPI {
         return parsed;
     }
 
-    posttask = async(taskinfo, token) => {
+    postTask = async(taskinfo, token) => {
         const res = await fetch(`${this.baseURL}`, {
             method:'POST',
             mode:'cors',
@@ -58,7 +58,7 @@ class TasksAPI {
         return parsed;
     }
 
-    today = async (token) => {
+    ontoday = async (token) => {
         const res = await fetch(`${this.baseURL}/today`, {
             method:'GET',
             mode:'cors',
