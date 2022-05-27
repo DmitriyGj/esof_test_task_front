@@ -1,0 +1,15 @@
+.Main {
+    display: flex;
+    width: 100%;
+    .CardsBlock{
+        width: 100%;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        padding: 2%;
+        * {
+            margin: 2% auto;
+        }
+    }
+
+}

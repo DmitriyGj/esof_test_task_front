@@ -1,23 +1,34 @@
-import logo from './logo.svg';
 import './App.css';
+import {Routes, Route, useLocation} from 'react-router-dom';
+import {publicRoutes, privateRoutes} from './constants/routes';
+import {useContext, useEffect} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {UserContext } from './context/usercontext';
 
 function App() {
+  const {user} = useContext(UserContext)
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const routesToRender = [...publicRoutes,
+  ...( user ? privateRoutes: [])]
+
+  useEffect(() => {
+    console.log('update')
+    if(!user){
+      navigate('/login')
+    }
+    else{
+      navigate('/tasks')
+    }
+  },[user])
+
   return (
+
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+        <Routes>
+          {routesToRender.map((routeprops,index) =>(<Route key={`/route${index}`} {...routeprops} />) )}
+        </Routes>
     </div>
   );
 }

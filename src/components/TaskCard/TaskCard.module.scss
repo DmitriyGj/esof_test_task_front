@@ -1,0 +1,32 @@
+.Card{
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    padding: 1%;
+    width: 100%;
+    box-sizing: border-box;
+
+
+
+    .title, .task_id, .status, .priority {
+        grid-row: 1/2;
+    }
+
+    &._complete{
+        .title {
+            color: green;
+        }
+    }
+
+    &._failed {
+        .title {
+            color: red;
+        }
+    }
+
+
+    .Wrapper {
+        padding: 0px;
+        justify-content: center;
+        align-items: center;
+    }
+}

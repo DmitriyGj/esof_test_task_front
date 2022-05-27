@@ -1,0 +1,17 @@
+.main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 10%;
+
+    .Form {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 50%;
+
+        .input {
+            margin: 6% 0px;
+        }
+    }
+}
