@@ -8,7 +8,7 @@ import { TaskForm } from "../../forms/TaskForm/TaskForm";
 import TasksAPI from "../../api/tasksapi";
 import { UserContext } from "../../context/usercontext";
 
-const excludetoshow = ['creation_date'];
+const excludetoshow = ['creation_date', 'creator'];
 
 export const TaskCard = (props) => {
     const completed = props.status === '"Выполнена"';

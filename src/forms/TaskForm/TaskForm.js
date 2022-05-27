@@ -15,25 +15,31 @@ const prioritySelectOptions = ['"Низкий"', '"Средний"', '"Высо�
 export const TaskForm = ({ additionalOnSubmit, submit, ...rest}) => {
     const [fetchSelectOptions, setFetchSelectOprions] = useState(true);
     const [executors, setExecutors] = useState([]);
+    const [needInit, setNeedInit] = useState(false);
     const {user} = useContext(UserContext);
-    const initvalues = {...rest, executor_id:rest.executor.user_details_id || fetchSelectOptions[0].user_details_id,
-                                status:rest.status || statusSelectOptions[0], 
-                                priority: rest.priority || prioritySelectOptions[0] }
-    const [Task, setTask] = useState(initvalues);
+    const [Task, setTask] = useState({...rest,executor_id:rest.executor.user_details_id});
+    const canedit = rest.creator?.user_id === user.user_id || user.role.role_name === 'Руководитель';
+    const caneditstatus = !(rest.creator?.user_id === user.user_details.supervisor?.user_id 
+        || rest.creator?.user_id === user.user_id || user.role.role_name === 'Руководитель');
 
     useEffect(() => {
-        if(fetchSelectOptions){
+        if(fetchSelectOptions || needInit){
             (async () => {
                 const res = await UsersAPI.getUsers(user.jwt)
                 setExecutors(res);
                 setFetchSelectOprions(false);
             })()
+
+            if(needInit){
+                setTask({...rest, executor_id: fetchSelectOptions[0].user_details_id ,
+                    status:rest.status || statusSelectOptions[0], 
+                    priority: rest.priority || prioritySelectOptions[0]});
+            }
         }
 
-    },[fetchSelectOptions]);
+    },[fetchSelectOptions, needInit]);
 
     const sendHandler = async () =>{ 
-        console.log(validate())
         if(validate() ){
             try{
                 const res = await submit(Task);
@@ -49,14 +55,14 @@ export const TaskForm = ({ additionalOnSubmit, submit, ...rest}) => {
     }
 
     const validate = () => {
-        return !!Task.title && isAfter(parseISO(Task.end_date), parseISO(Task.start_date))
+        return (!!Task.title && isAfter(parseISO(Task.end_date), parseISO(Task.start_date)) )
     }
 
     const changeHandler = ({target}) => setTask({...Task, [target.name]:target.value }) 
 
-    return(<form className={style.Main}>
+    return(!needInit ? <form className={style.Main}>
             <FormControl className={style.Form} >
-                    <TextField
+                    <TextField disabled={!canedit}
                             error={!Task.title}
                             helperText={!Task.title && 'Название не может быть пустым'}
                             name='title'
@@ -66,7 +72,8 @@ export const TaskForm = ({ additionalOnSubmit, submit, ...rest}) => {
                             type='text'
                             value={Task.title} 
                             onChange={changeHandler}/>
-                    <TextField name='status'
+                    <TextField disabled={caneditstatus}
+                            name='status'
                             id='status'
                             key='status'
                             label='Status' 
@@ -81,7 +88,8 @@ export const TaskForm = ({ additionalOnSubmit, submit, ...rest}) => {
                                 </MenuItem>))
                             }  
                     </TextField>
-                    <TextField name='priority'
+                    <TextField disabled={!canedit}
+                            name='priority'
                             id='priority'
                             key='priority'
                             label='Priority' 
@@ -96,7 +104,8 @@ export const TaskForm = ({ additionalOnSubmit, submit, ...rest}) => {
                                 </MenuItem>))
                             }  
                     </TextField>
-                    <TextField name='executor_id'
+                    <TextField disabled={!canedit} 
+                            name='executor_id'
                             id='executor_id'
                             key='executor_id'
                             label='Executor' 
@@ -113,7 +122,7 @@ export const TaskForm = ({ additionalOnSubmit, submit, ...rest}) => {
                     </TextField>
                     
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
-                        <DateTimePicker
+                        <DateTimePicker disabled={!canedit}
                                 label = 'Start date'
                                 name = 'start_date'
                                 id='start_date'
@@ -127,7 +136,8 @@ export const TaskForm = ({ additionalOnSubmit, submit, ...rest}) => {
                                         {...props} />)}/>
                     </LocalizationProvider> 
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
-                        <DateTimePicker label = 'End date'
+                        <DateTimePicker disabled={!canedit} 
+                                label = 'End date'
                                 name = 'end_date'
                                 id='end_date'
                                 value={Task.end_date}
@@ -140,5 +150,5 @@ export const TaskForm = ({ additionalOnSubmit, submit, ...rest}) => {
                     </LocalizationProvider> 
                 <Button onClick={() => sendHandler()} variant='contained'>Ok</Button>
             </FormControl>
-        </form>)
+        </form>: <>loading</>)
 }

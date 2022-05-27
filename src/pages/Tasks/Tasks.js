@@ -1,4 +1,4 @@
-import {useState,useEffect, useContext} from 'react';
+import {useState,useEffect, useContext, useCallback} from 'react';
 import { TaskCard } from '../../components/TaskCard/TaskCard';
 import TasksAPI from '../../api/tasksapi';
 import { UserContext } from '../../context/usercontext';
@@ -30,6 +30,17 @@ export const Tasks = () => {
     const {user} =useContext(UserContext);
     const [showModal, setShowModal] = useState(false);
 
+    const addHandler = useCallback(async(values) => {
+            try{
+                const res = await TasksAPI.postTask(values, user.jwt)
+                console.log(res);
+            }
+            catch(e){
+                console.log(e);
+                alert('Проищошла не предвиденная ошибка')
+            }
+    },[])
+
     useEffect(() => {
             (async() => {
                     const fetchedTasks = await TasksAPI[taskFetchFunc](user.jwt);
@@ -55,12 +66,14 @@ export const Tasks = () => {
             </div>
             <div className={style.CardsBlock}>
                 {tasks.map(task => <TaskCard key={'task' + task.task_id} {...task}/>)}
-                <Button variant='contained'>Add new task</Button>
+                <Button variant='contained' onClick={() => setShowModal(true)}>Add new task</Button>
             </div>
             <ModalWindow visible={showModal} 
                         title='Создание новой задачи' 
                         onClose = {() => setShowModal(false)} >
-                <TaskForm  />
+                <TaskForm submit={values => addHandler(values)}
+                    additionalOnSubmit={() => setShowModal(false)}
+                    {...initTaskFields} />
             </ModalWindow>
         </div>)
 
